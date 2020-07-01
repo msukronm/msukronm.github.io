@@ -1,0 +1,50 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+ body {
+   background-color: whitesmoke;
+ }
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+nav ul a, .sidenav-trigger {
+  color: black;
+}
+
+.img-team {
+  width : 125px !important;
+  height: 125px !important;
+  padding: 5px !important;
+  margin: 5px !important;
+  border: 1px solid whitesmoke !important;
+}
+
+.img-team-standings {
+  width: 32px;
+  height: 32px;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.team-list .card .card-content {
+  padding: 10px;
+}
+
+@media only screen and (max-width: 992px){
+  .img-team-standings {
+    width: 18px;
+    height: 18px;
+    margin: 3px;
+    vertical-align: middle;
+  } 
+}

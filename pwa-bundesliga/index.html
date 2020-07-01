@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <title>Bundesliga</title>  
+  <link rel="icon" type="image/png" href="img/icon/favicon.ico">
+  <link rel="apple-touch-icon" type="image/png" href="img/icon/apple-touch-icon.png">
+
+  <!-- CSS  -->
+  <link href="css/material-icons.css" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+  <!-- Mendaftarkan Web App Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#C62828"/>
+
+</head>
+<body>
+  <div class="navbar-fixed">
+      <nav class="white" role="navigation">
+        <div class="nav-wrapper container">
+          <a id="logo-container" href="#" class="brand-logo">
+            <img src="img/icon/android-chrome-192x192.png" width="58px" alt="logo-bundesliga">
+          </a>
+          <ul id="topnav" class="right hide-on-med-and-down black-text"></ul>
+          <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+  </div>        
+  <ul id="nav-mobile" class="sidenav"></ul>
+
+  <div id="row-content"></div>
+
+  <footer class="page-footer red red-darken-3">
+    <div class="container"></div>
+    <div class="footer-copyright">
+      <div class="container">
+        Moh. Sukron Makmun - IDCamp x Dicoding
+      </div>
+    </div>
+  </footer>
+
+
+  <!--  Scripts-->
+  <script src="js/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/api-football-data.js"></script>
+  <script src="js/init-components.js"></script>
+  <script src="js/register-sw.js"></script>
+
+  </body>
+</html>

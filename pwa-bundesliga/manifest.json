@@ -1,0 +1,22 @@
+
+{
+    "name": "PWA Bundesliga",
+    "short_name": "PWA Bundesliga",
+    "description": "Aplikasi PWA Bundesliga",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "theme_color": "#C62828",
+    "icons": [
+        {
+            "src": "./img/icon/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icon/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
