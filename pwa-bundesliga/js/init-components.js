@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-  let yearSeason = '2019';
+  set_id_competition('2002');
+  set_seasion_competition('2019');
 
     // Activate sidebar nav
     let elems = document.querySelectorAll("#nav-mobile");
@@ -18,15 +19,15 @@ document.addEventListener("DOMContentLoaded", function() {
             });
        
             // Daftarkan event listener untuk setiap tautan menu
-            document.querySelectorAll("#nav-mobile a, #topnav a").forEach(function(elm) {
+            document.querySelectorAll("#nav-mobile a, #topnav a, .card-action a").forEach(function(elm) {
               elm.addEventListener("click", function(event) {
                 // Tutup sidenav
                 var sidenav = document.querySelector("#nav-mobile");
                 M.Sidenav.getInstance(sidenav).close();
        
                 // Muat konten halaman yang dipanggil
-                page = event.target.getAttribute("href").substr(1);
-                loadPage(page);
+                // page = event.target.getAttribute("href").substr(1);
+                // loadPage(page);
               });
             });
           }
@@ -36,8 +37,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Load page content
-    let page = window.location.hash.substr(1);
-    if (page == "") page = "beranda";
+    // let page = window.location.hash.substr(1);
+    const urlSearch = new URLSearchParams(window.location.search);
+    let page = urlSearch.get("page");
+    let id_team = urlSearch.get("id");
+    if (page == "" || page == undefined) page = "beranda";
+    if (id_team == "" || id_team == undefined) id_team = "0";
     loadPage(page);
 
     function loadPage(page) {
@@ -49,19 +54,29 @@ document.addEventListener("DOMContentLoaded", function() {
                 content.innerHTML = xhttp.responseText;
                 switch (page) {
                   case "beranda":
-                    teams(yearSeason);
+                    teams();
+                    data_competition();
                     break;
                 
                   case "klub":
-                    teams(yearSeason);
+                    teams();
                     break;
                 
                   case "klasemen":
-                    tableStandings(yearSeason);
+                    tableStandings();
+                    break;
+                
+                  case "lihat_tim":
+                    getTeamsData(id_team);
+                    break;
+                
+                  case "pemain_favorit":
+                    favoritePlayer();
                     break;
                 
                   default:
-                    teams(yearSeason);
+                    teams();
+                    data_competition();
                     break;
                 }
             } else if (this.status == 404) {
