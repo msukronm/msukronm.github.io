@@ -4,6 +4,7 @@ const urlsToCache = [
   "./manifest.json",
   "./nav.html",
   "./index.html",
+  "./index.js",
   "./pages/beranda.html",
   "./pages/klasemen.html",
   "./pages/klub.html",
