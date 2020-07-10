@@ -76,6 +76,18 @@ teams (season=def_seasion_competition, id_competition=def_id_competition) {
 }
 
 renderTeamSection(result) {
+    for(let i=0; i<result.teams.length; i++){
+        const teams = result.teams[i];
+        const urlAPI = `${url}/v2/teams/${teams.id}`;
+
+        if ('caches' in window) {
+            caches.match(urlAPI);
+        }else{
+            this.fetchAPI(urlAPI);
+        }
+
+    }
+
     let setHTML = '<div class="row">';
     if(result.teams.length > 0) {
         // let page = window.location.hash.substr(1);
@@ -190,7 +202,11 @@ renderTimDetail(result) {
     let coach = squad.find( data => {
         return data.role.toLowerCase() === 'coach';
     });
-    $(".coach-name-lihat-tim").html(coach.name);
+    
+    if(coach !== undefined){
+        $(".coach-name-lihat-tim").html(coach.name);
+    }
+
     let player = squad.filter( data => {
         return data.role.toLowerCase().includes("player");
     });
