@@ -3,7 +3,7 @@ const dbPromised = idb.open("pwa-bundesliga", 1, function(upgradeDb) {
     articlesObjectStore.createIndex("id", "id");
 });
 
-function getFavoritePlayer() {
+const getFavoritePlayer = () => {
   return new Promise((resolve, reject) => {
       dbPromised
         .then(db => {
@@ -17,7 +17,7 @@ function getFavoritePlayer() {
     });
 }
 
-function getPlayerById(id){
+const getPlayerById = (id) => {
   return new Promise( (resolve, reject) => {
       dbPromised
         .then( db => {
@@ -33,7 +33,7 @@ function getPlayerById(id){
     });
 }
 
-function saveFavoritePlayer(player){
+const saveFavoritePlayer = (player) => {
   dbPromised
     .then(db => {
         let tx = db.transaction("favorite_players", "readwrite");
@@ -46,7 +46,7 @@ function saveFavoritePlayer(player){
     })
 }
 
-function deleteFavoritePlayer(id){
+const deleteFavoritePlayer = (id) => {
   return new Promise( (resolve, reject) => {
       dbPromised
         .then( db => {
@@ -56,8 +56,10 @@ function deleteFavoritePlayer(id){
           return tx.complete;
         })
         .then( player => {
-          alert("Berhasil! Anda membatalkan pemain favorit.");
+          alert("Anda membatalkan pemain favorit.");
           resolve(player);
         })
     });
 }
+
+export {getFavoritePlayer, getPlayerById, saveFavoritePlayer, deleteFavoritePlayer};

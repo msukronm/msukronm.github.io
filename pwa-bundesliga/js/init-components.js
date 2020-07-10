@@ -1,26 +1,24 @@
-document.addEventListener("DOMContentLoaded", function() {
-  set_id_competition('2002');
-  set_seasion_competition('2019');
+import ApiFootballData from './api-football-data.js';
 
-    // Activate sidebar nav
-    let elems = document.querySelectorAll("#nav-mobile");
-    M.Sidenav.init(elems);
-    loadNav();
+function initComponent() {
+
+    const apiFootball = new ApiFootballData();
    
-    function loadNav() {
+    const loadNav = () => {
         let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
-            if (this.status != 200) return;
+        xhttp.onreadystatechange = (elm) => {
+          let this_ = elm.currentTarget;
+          if (this_.readyState == 4) {
+            if (this_.status != 200) return;
        
             // Muat daftar tautan menu
-            document.querySelectorAll("#topnav, #nav-mobile").forEach(function(elm) {
+            document.querySelectorAll("#topnav, #nav-mobile").forEach( (elm) => {
               elm.innerHTML = xhttp.responseText;
             });
        
             // Daftarkan event listener untuk setiap tautan menu
-            document.querySelectorAll("#nav-mobile a, #topnav a, .card-action a").forEach(function(elm) {
-              elm.addEventListener("click", function(event) {
+            document.querySelectorAll("#nav-mobile a, #topnav a, .card-action a").forEach( (elm) => {
+              elm.addEventListener("click", (event) => {
                 // Tutup sidenav
                 var sidenav = document.querySelector("#nav-mobile");
                 M.Sidenav.getInstance(sidenav).close();
@@ -36,47 +34,39 @@ document.addEventListener("DOMContentLoaded", function() {
         xhttp.send();
     }
 
-    // Load page content
-    // let page = window.location.hash.substr(1);
-    const urlSearch = new URLSearchParams(window.location.search);
-    let page = urlSearch.get("page");
-    let id_team = urlSearch.get("id");
-    if (page == "" || page == undefined) page = "beranda";
-    if (id_team == "" || id_team == undefined) id_team = "0";
-    loadPage(page);
-
-    function loadPage(page) {
+    const loadPage = (page) => {
         let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
+        xhttp.onreadystatechange = (elm) => {
+          let this_ = elm.currentTarget;
+          if (this_.readyState == 4) {
             var content = document.querySelector("#row-content");
-            if (this.status == 200) {
+            if (this_.status == 200) {
                 content.innerHTML = xhttp.responseText;
                 switch (page) {
                   case "beranda":
-                    teams();
-                    data_competition();
+                    apiFootball.teams();
+                    apiFootball.data_competition();
                     break;
                 
                   case "klub":
-                    teams();
+                    apiFootball.teams();
                     break;
                 
                   case "klasemen":
-                    tableStandings();
+                    apiFootball.tableStandings();
                     break;
                 
                   case "lihat_tim":
-                    getTeamsData(id_team);
+                    apiFootball.getTeamsData(id_team);
                     break;
                 
                   case "pemain_favorit":
-                    favoritePlayer();
+                    apiFootball.favoritePlayer();
                     break;
                 
                   default:
-                    teams();
-                    data_competition();
+                    apiFootball.teams();
+                    apiFootball.data_competition();
                     break;
                 }
             } else if (this.status == 404) {
@@ -91,4 +81,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     }
 
-});
+    // Activate sidebar nav
+    let elems = document.querySelectorAll("#nav-mobile");
+    M.Sidenav.init(elems);
+    loadNav();
+
+    // Load page content
+    // let page = window.location.hash.substr(1);
+    const urlSearch = new URLSearchParams(window.location.search);
+    let page = urlSearch.get("page");
+    let id_team = urlSearch.get("id");
+    if (page == "" || page == undefined) page = "beranda";
+    if (id_team == "" || id_team == undefined) id_team = "0";
+    loadPage(page);
+
+}
+
+export default initComponent;

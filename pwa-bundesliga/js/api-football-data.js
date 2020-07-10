@@ -1,13 +1,17 @@
+import {getFavoritePlayer, getPlayerById, saveFavoritePlayer, deleteFavoritePlayer} from './db.js';
+
 const url = 'https://api.football-data.org';
 const API_TOKEN = '6164ddf5a832426380c9624cdb95eb1f';
 let def_id_competition = '2002';
 let def_seasion_competition = '2018';
 
-function changeImageProtocol(url) {
+class ApiFootballData {
+
+changeImageProtocol(url) {
     return url.replace(/^http:\/\//i, 'https://');
 }
 
-function status(response) {
+status(response) {
     if (response.errorCode == undefined) {
         return Promise.resolve(response);
     } else {
@@ -16,15 +20,15 @@ function status(response) {
     }
 }
   
-function setJSON(response) {
+setJSON(response) {
     return response.json();
 }
 
-function error(error) {
+error(error) {
     console.log(`Error in fetching : ${error}`);
 }
 
-function fetchAPI(urlAPI) {
+fetchAPI(urlAPI) {
     return fetch(urlAPI, 
     { 
         headers : 
@@ -32,21 +36,21 @@ function fetchAPI(urlAPI) {
             'X-Auth-Token' : API_TOKEN
         }
     })
-    .then(status)
-    .then(setJSON)
-    .catch(error);
+    .then(this.status)
+    .then(this.setJSON)
+    .catch(this.error);
 }
 
-function set_id_competition(params) {
+set_id_competition(params) {
     def_id_competition = params;
 }
 
-function set_seasion_competition(params) {
+set_seasion_competition(params) {
     def_seasion_competition = params;
 }
 
 // tim
-function teams (season=def_seasion_competition, id_competition=def_id_competition) {
+teams (season=def_seasion_competition, id_competition=def_id_competition) {
     const urlAPI = `${url}/v2/competitions/${id_competition}/teams?season=${season}`;
 
     if ('caches' in window) {
@@ -55,23 +59,23 @@ function teams (season=def_seasion_competition, id_competition=def_id_competitio
                 if (response) {
                     response.json().then( (result) => {
                         $('#year-season').html(season);
-                        renderTeamSection(result);
+                        this.renderTeamSection(result);
                     })
                 }
             })
     }
 
-    fetchAPI(urlAPI)
+    this.fetchAPI(urlAPI)
         .then( result => {
             $('#year-season').html(season);
-            renderTeamSection(result);
+            this.renderTeamSection(result);
         })
         .catch(error => {
             console.log(`Error in rendering : ${error}`);
         });
 }
 
-function renderTeamSection(result) {
+renderTeamSection(result) {
     let setHTML = '<div class="row">';
     if(result.teams.length > 0) {
         // let page = window.location.hash.substr(1);
@@ -81,15 +85,15 @@ function renderTeamSection(result) {
         
         switch (page) {
             case "beranda":
-                setHTML += berandaTeamRender(result);
+                setHTML += this.berandaTeamRender(result);
                 break;
             
             case "klub":
-                setHTML += klubTeamRender(result);
+                setHTML += this.klubTeamRender(result);
                 break;
             
             default:
-                setHTML += berandaTeamRender(result);
+                setHTML += this.berandaTeamRender(result);
                 break;
         }
     }else{
@@ -100,19 +104,19 @@ function renderTeamSection(result) {
     $(".team-list").html(setHTML);
 }
 
-function berandaTeamRender(result){
+berandaTeamRender(result){
     let setHTML = '';
     let imgUrl = '';
     for(let i=0; i<result.teams.length; i++){
         const teams = result.teams[i];
-        imgUrl = changeImageProtocol(teams.crestUrl);
+        imgUrl = this.changeImageProtocol(teams.crestUrl);
         setHTML += `<img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team">`;
     }
 
     return setHTML;
 }
 
-function klubTeamRender(result){
+klubTeamRender(result){
     let setHTML = '';
     let imgUrl = '';
     for(let i=0; i<result.teams.length; i++){
@@ -120,7 +124,7 @@ function klubTeamRender(result){
         const arrColor = teams.clubColors.split("/");
         let setColor = arrColor[0].trim().toLowerCase();
         let setColorText = "white-text";
-        imgUrl = changeImageProtocol(teams.crestUrl);
+        imgUrl = this.changeImageProtocol(teams.crestUrl);
 
         if (setColor === "black") {
             setColor = "grey";
@@ -151,7 +155,7 @@ function klubTeamRender(result){
 }
 
 // lihat tim
-function getTeamsData(id_team) {
+getTeamsData(id_team) {
     const urlAPI = `${url}/v2/teams/${id_team}`;
     
     if ('caches' in window) {
@@ -159,29 +163,29 @@ function getTeamsData(id_team) {
             .then( (response) => {
                 if (response) {
                     response.json().then( (result) => {
-                        renderTimDetail(result);
+                        this.renderTimDetail(result);
                     })
                 }
             })
     }
 
-    fetchAPI(urlAPI)
+    this.fetchAPI(urlAPI)
         .then( result => {
-            renderTimDetail(result);
+            this.renderTimDetail(result);
         })
         .catch(error => {
             console.log(`Error in rendering : ${error}`);
         });
 }
 
-function renderTimDetail(result) {
+renderTimDetail(result) {
     let team = result;
     let squad = team.squad;
     delete team.squad;
 
     $(".name-lihat-tim").html(team.name);
     $(".detail-lihat-tim").html(`${team.founded} - ${team.venue}`);
-    $(".img-lihat-tim").attr("src", changeImageProtocol(team.crestUrl));
+    $(".img-lihat-tim").attr("src", this.changeImageProtocol(team.crestUrl));
 
     let coach = squad.find( data => {
         return data.role.toLowerCase() === 'coach';
@@ -243,7 +247,7 @@ function renderTimDetail(result) {
 }
 
 // klasemen
-function tableStandings (season=def_seasion_competition, id_competition=def_id_competition) {
+tableStandings (season=def_seasion_competition, id_competition=def_id_competition) {
     const urlAPI = `${url}/v2/competitions/${id_competition}/standings?season=${season}&standingType=TOTAL`;
     
     if ('caches' in window) {
@@ -252,23 +256,23 @@ function tableStandings (season=def_seasion_competition, id_competition=def_id_c
                 if (response) {
                     response.json().then( (result) => {
                         $('#year-season').html(season);
-                        renderTableStandingSection(result);
+                        this.renderTableStandingSection(result);
                     })
                 }
             })
     }
 
-    fetchAPI(urlAPI)
+    this.fetchAPI(urlAPI)
             .then( result => {
             $('#year-season').html(season);
-            renderTableStandingSection(result);
+            this.renderTableStandingSection(result);
         })
         .catch(error => {
             console.log(`Error in rendering : ${error}`);
         });
 }
 
-function renderTableStandingSection(result) {
+renderTableStandingSection(result) {
     let tableStandings = result.standings[0].table;
     let imgUrl = '';
     let setHTML = `<div class="row">
@@ -299,7 +303,7 @@ function renderTableStandingSection(result) {
                 }
             }
             
-            imgUrl = changeImageProtocol(tableStandings[i].team.crestUrl);
+            imgUrl = this.changeImageProtocol(tableStandings[i].team.crestUrl);
             setHTML += `
                 <tr class="${bgColor}">
                     <td>${tableStandings[i].position}</td>
@@ -326,7 +330,7 @@ function renderTableStandingSection(result) {
 }
 
 // kompetisi
-function data_competition(id_competition=def_id_competition) {
+data_competition(id_competition=def_id_competition) {
     const urlAPI = `${url}/v2/competitions/${id_competition}`;
     
     if ('caches' in window) {
@@ -334,22 +338,22 @@ function data_competition(id_competition=def_id_competition) {
             .then( (response) => {
                 if (response) {
                     response.json().then( (result) => {
-                        renderTableChampionSection(result);
+                        this.renderTableChampionSection(result);
                     })
                 }
             })
     }
 
-    fetchAPI(urlAPI)
+    this.fetchAPI(urlAPI)
             .then( result => {
-            renderTableChampionSection(result);
+            this.renderTableChampionSection(result);
         })
         .catch(error => {
             console.log(`Error in rendering : ${error}`);
         });
 }
 
-function renderTableChampionSection(result) {
+renderTableChampionSection(result) {
     let tableSeason = result.seasons;
     let imgUrl = '';
     let setHTML = `<div class="row">
@@ -369,7 +373,7 @@ function renderTableChampionSection(result) {
             const endYear       = tableSeason[i].endDate.split('-');
 
             if(winnerData !== null){
-                imgUrl = changeImageProtocol(winnerData.crestUrl);
+                imgUrl = this.changeImageProtocol(winnerData.crestUrl);
                 setHTML += `
                     <tr>
                         <td>${startYear[0]} - ${endYear[0]}</td>
@@ -395,15 +399,15 @@ function renderTableChampionSection(result) {
 }
 
 // pemain favorit
-function favoritePlayer() {
+favoritePlayer() {
     getFavoritePlayer()
         .then( result => {
-            renderFavoritePlayer(result);
+            this.renderFavoritePlayer(result);
         });
 }
 
-function renderFavoritePlayer(result) {
-    let setHTML = `<table class="table-responsive striped bordered">
+renderFavoritePlayer(result) {
+    let setHTML = `<table class="responsive-table striped bordered">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -449,3 +453,6 @@ function renderFavoritePlayer(result) {
         }
     });
 }
+}
+
+export default ApiFootballData;
