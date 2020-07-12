@@ -1,4 +1,4 @@
-import {getFavoritePlayer, getPlayerById, saveFavoritePlayer, deleteFavoritePlayer} from './db.js';
+import {getFavorite, getDataById, saveFavorite, deleteFavorite} from './db.js';
 
 const url = 'https://api.football-data.org';
 const API_TOKEN = '6164ddf5a832426380c9624cdb95eb1f';
@@ -68,31 +68,20 @@ teams (season=def_seasion_competition, id_competition=def_id_competition) {
     this.fetchAPI(urlAPI)
         .then( result => {
             $('#year-season').html(season);
-            this.renderTeamSection(result);
+            this.renderTeamSection(result, "online");
         })
         .catch(error => {
             console.log(`Error in rendering : ${error}`);
         });
 }
 
-renderTeamSection(result) {
-    for(let i=0; i<result.teams.length; i++){
-        const teams = result.teams[i];
-        const urlAPI = `${url}/v2/teams/${teams.id}`;
-
-        if ('caches' in window) {
-            caches.match(urlAPI);
-        }else{
-            this.fetchAPI(urlAPI);
-        }
-
-    }
-
+renderTeamSection(result, params='caches') {
     let setHTML = '<div class="row">';
+    // let page = window.location.hash.substr(1);
+    const urlSearch = new URLSearchParams(window.location.search);
+    let page = urlSearch.get("page");
+
     if(result.teams.length > 0) {
-        // let page = window.location.hash.substr(1);
-        const urlSearch = new URLSearchParams(window.location.search);
-        let page = urlSearch.get("page");
         if (page == "" || page == undefined) page = "beranda";
         
         switch (page) {
@@ -101,7 +90,7 @@ renderTeamSection(result) {
                 break;
             
             case "klub":
-                setHTML += this.klubTeamRender(result);
+                setHTML += this.klubTeamRender(result, params);
                 break;
             
             default:
@@ -114,6 +103,45 @@ renderTeamSection(result) {
     setHTML +='</div>';
 
     $(".team-list").html(setHTML);
+    if(result.teams.length > 0 && page === "klub"){
+
+        getFavorite()
+            .then(result => {
+                for (let i = 0; i < result.length; i++) {
+                    let icons = $(".btn-favorite[data-id="+result[i].id+"] i.material-icons");
+                    if(icons.hasClass("grey-text")){
+                        icons.removeClass("grey-text");
+                        icons.addClass("red-text");
+                    }
+                }
+            })
+        
+        const teams = result.teams;
+        $(".btn-favorite").on("click", (event) => {
+            const favIcon = event.target;
+            const id = event.currentTarget.dataset.id;
+            const data = teams.find( data => {
+                return parseInt(data.id) === parseInt(id);
+            });
+            const buttonTim = $("a[data-id='"+id+"']");
+            
+            if(favIcon.classList.contains("grey-text")){
+                if(confirm("Anda akan menambahkan sebagai data Favorit?")){
+                    favIcon.classList.remove('grey-text');
+                    favIcon.classList.add('red-text');
+                    saveFavorite(data);
+                }
+    
+            }else{
+                if(confirm("Anda akan membatalkan sebagai data Favorit?")){
+                    favIcon.classList.remove('red-text');
+                    favIcon.classList.add('grey-text');
+                    deleteFavorite(id);
+                }
+                
+            }
+        });
+    }
 }
 
 berandaTeamRender(result){
@@ -128,25 +156,29 @@ berandaTeamRender(result){
     return setHTML;
 }
 
-klubTeamRender(result){
+klubTeamRender(result, params){
     let setHTML = '';
     let imgUrl = '';
     for(let i=0; i<result.teams.length; i++){
         const teams = result.teams[i];
         const arrColor = teams.clubColors.split("/");
         let setColor = arrColor[0].trim().toLowerCase();
+        let setColor2 = setColor+" darken-2";
         let setColorText = "white-text";
         imgUrl = this.changeImageProtocol(teams.crestUrl);
-
+        
         if (setColor === "black") {
             setColor = "grey";
+            setColor2 = setColor+" darken-2";
         } else if (setColor === "white") {
+            setColor2 = "grey lighten-4";
             setColorText = "";
         }
 
+
         setHTML += `<div class="col l6 s12">
                 <div class="card ${setColor}">
-                    <div class="card-image ${setColor} darken-2" style="text-align: -webkit-center">
+                    <div class="card-image ${setColor2}" style="text-align: -webkit-center">
                         <img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team">
                     </div>
                     <div class="card-stacked">
@@ -155,9 +187,13 @@ klubTeamRender(result){
                             <div class="divider"></div>
                             ${teams.founded} - ${teams.venue}
                         </div>
-                        <div class="card-action center" style="padding: 5px;">
-                            <a href="index.html?page=lihat_tim&id=${teams.id}" class="btn-small black">Lihat Tim</a>
-                        </div>
+                        <div class="card-action center white" style="padding: 5px;">
+                            <button type="button" class="btn white btn-favorite" data-id="${teams.id}"><i class="material-icons grey-text">favorite</i></button> `;
+        if(params === "online"){
+            setHTML +=  `<a href="index.html?page=lihat_tim&id=${teams.id}" class="btn white" data-id="${teams.id}"><i class="material-icons grey-text">group</i></a>`;
+
+        }
+        setHTML +=  `</div>
                     </div>
                 </div>
             </div>`;
@@ -221,45 +257,9 @@ renderTimDetail(result) {
                         <td>${player[i].name}</td>
                         <td>${player[i].shirtNumber===null ? '-' : player[i].shirtNumber}</td>
                         <td>${player[i].position}</td>
-                        <td>
-                            <a href="javascript:;" class="favorite-button" data-id=${player[i].id}><i class="material-icons ${iconColor}">favorite</i></a>
-                        </td>
                     </tr>`;
             $(".players-list table tbody").append(setHTML);
-
-            getPlayerById(player[i].id)
-                .then( () => {
-                    let icons = $(".players-list table tbody a[data-id="+player[i].id+"] .material-icons");
-                    if(icons.hasClass("grey-text")){
-                        icons.removeClass("grey-text");
-                        icons.addClass("red-text");
-                    }
-                });
     }
-
-    $(".favorite-button").on("click", (event) => {
-        const favIcon = event.target;
-        const idPlayer = event.currentTarget.dataset.id;
-        const dataPlayer = player.find( data => {
-            return parseInt(data.id) === parseInt(idPlayer);
-        });
-        
-        if(favIcon.classList.contains("grey-text")){
-            if(confirm("Anda akan menambahkan sebagai Pemain Favorit?")){
-                favIcon.classList.remove('grey-text');
-                favIcon.classList.add('red-text');
-                saveFavoritePlayer({id:dataPlayer.id, team:team, player:dataPlayer});
-            }
-
-        }else{
-            if(confirm("Anda akan membatalkan sebagai Pemain Favorit?")){
-                favIcon.classList.remove('red-text');
-                favIcon.classList.add('grey-text');
-                deleteFavoritePlayer(dataPlayer.id);
-            }
-            
-        }
-    });
 }
 
 // klasemen
@@ -414,53 +414,61 @@ renderTableChampionSection(result) {
     $(".champions-list").html(setHTML);
 }
 
-// pemain favorit
-favoritePlayer() {
-    getFavoritePlayer()
+// klub favorit
+favorite() {
+    getFavorite()
         .then( result => {
-            this.renderFavoritePlayer(result);
+            this.renderFavorite(result);
         });
 }
 
-renderFavoritePlayer(result) {
-    let setHTML = `<table class="responsive-table striped bordered">
+renderFavorite(result) {
+    let setHTML = `<div class="row">
+            <table class="responsive-table striped bordered">
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Logo</th>
                         <th>Nama</th>
-                        <th>Posisi</th>
-                        <th>Asal Tim</th>
+                        <th>Singkatan</th>
+                        <th>Terbentuk</th>
+                        <th>Stadion</th>
+                        <th>Warna Klub</th>
                         <th>#</th>
                     </tr>
                 </thead>
                 <tbody>`;
     for (let i = 0; i < result.length; i++) {
-        let player = result[i].player;
-        let team = result[i].team;
+        let team = result[i];
 
         setHTML += `<tr>
                     <td>${i+1}</td>
-                    <td>${player.name}</td>
-                    <td>${player.position}</td>
+                    <td><img src="${this.changeImageProtocol(team.crestUrl)}" class="img-team-standings" alt="Logo ${team.name}"></td>
                     <td>${team.name}</td>
+                    <td>${team.shortName}</td>
+                    <td>${team.founded}</td>
+                    <td>${team.venue}</td>
+                    <td>${team.clubColors}</td>
                     <td>
-                        <a href="javascript:;" class="favorite-button" data-id=${result[i].id}><i class="material-icons red-text">favorite</i></a>
+                        <a href="javascript:;" class="btn btn-small white btn-favorite" data-id=${result[i].id}><i class="material-icons red-text">favorite</i></a>
                     </td>
                 </tr>`;    
     }
-    setHTML += `</tbody></table>`;
+    setHTML += `</tbody>
+            </table>
+            </div>`;
 
-    $(".table-favorite-player").html(setHTML);
+    $(".table-favorite-klub").html(setHTML);
 
-    $(".favorite-button").on("click", (event) => {
+    $(".btn-favorite").on("click", (event) => {
         const favIcon = event.target;
         const idPlayer = event.currentTarget.dataset.id;
         
         if(favIcon.classList.contains("red-text")){
-            if(confirm("Anda akan membatalkan sebagai Pemain Favorit?")){
-                deleteFavoritePlayer(idPlayer)
+            if(confirm("Anda akan membatalkan sebagai data Favorit?")){
+                deleteFavorite(idPlayer)
                     .then(()=>{
-                        window.location = './index.html?page=pemain_favorit';
+                        window.location = './index.html?page=klub_favorit';
                     });
             }
 

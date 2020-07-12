@@ -60,8 +60,8 @@ function initComponent() {
                     apiFootball.getTeamsData(id_team);
                     break;
                 
-                  case "pemain_favorit":
-                    apiFootball.favoritePlayer();
+                  case "klub_favorit":
+                    apiFootball.favorite();
                     break;
                 
                   default:

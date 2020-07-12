@@ -1,65 +1,65 @@
-const dbPromised = idb.open("pwa-bundesliga", 1, function(upgradeDb) {
-    let articlesObjectStore = upgradeDb.createObjectStore("favorite_players", {keyPath:'id'});
-    articlesObjectStore.createIndex("id", "id");
+const objectStoreName = "favorite_teams";
+const dbPromised = idb.open("db-pwa-bundesliga", 1, function(upgradeDb) {
+    let articlesObjectStore = upgradeDb.createObjectStore(objectStoreName, {keyPath:'id'});
 });
 
-const getFavoritePlayer = () => {
+const getFavorite = () => {
   return new Promise((resolve, reject) => {
       dbPromised
         .then(db => {
-          let tx = db.transaction("favorite_players", "readonly");
-          let store = tx.objectStore("favorite_players");
+          let tx = db.transaction(objectStoreName, "readonly");
+          let store = tx.objectStore(objectStoreName);
           return store.getAll();
         })
-        .then(player => {
-          resolve(player);
+        .then(result => {
+          resolve(result);
         });
     });
 }
 
-const getPlayerById = (id) => {
+const getDataById = (id) => {
   return new Promise( (resolve, reject) => {
       dbPromised
         .then( db => {
-          let tx = db.transaction("favorite_players", "readonly");
-          let store = tx.objectStore("favorite_players");
+          let tx = db.transaction(objectStoreName, "readonly");
+          let store = tx.objectStore(objectStoreName);
           return store.get(id);
         })
         .then( result => {
           if(result !== undefined){
-            resolve(result.player);
+            resolve(result);
           }
         });
     });
 }
 
-const saveFavoritePlayer = (player) => {
+const saveFavorite = (data) => {
   dbPromised
     .then(db => {
-        let tx = db.transaction("favorite_players", "readwrite");
-        let store = tx.objectStore("favorite_players");
-        store.add(player);
+        let tx = db.transaction(objectStoreName, "readwrite");
+        let store = tx.objectStore(objectStoreName);
+        store.add(data);
         return tx.complete;
     })
     .then(() => {
-        alert("Berhasil! Anda menambahkan pemain favorit.");
+        alert("Berhasil! Anda menambahkan data favorit.");
     })
 }
 
-const deleteFavoritePlayer = (id) => {
+const deleteFavorite = (id) => {
   return new Promise( (resolve, reject) => {
       dbPromised
         .then( db => {
-          var tx = db.transaction("favorite_players", "readwrite");
-          var store = tx.objectStore("favorite_players");
+          var tx = db.transaction(objectStoreName, "readwrite");
+          var store = tx.objectStore(objectStoreName);
           store.delete(parseInt(id));
           return tx.complete;
         })
         .then( player => {
-          alert("Anda membatalkan pemain favorit.");
+          alert("Anda membatalkan data favorit.");
           resolve(player);
         })
     });
 }
 
-export {getFavoritePlayer, getPlayerById, saveFavoritePlayer, deleteFavoritePlayer};
+export {getFavorite, getDataById, saveFavorite, deleteFavorite};
