@@ -1,6 +1,7 @@
 
 {
     "name": "PWA Bundesliga",
+    "gcm_sender_id" : "634384659703",
     "short_name": "PWA Bundesliga",
     "description": "Aplikasi PWA Bundesliga",
     "start_url": "./index.html",

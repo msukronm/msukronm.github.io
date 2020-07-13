@@ -1,0 +1,16 @@
+{
+  "name": "pwa-bindesliga",
+  "version": "1.0.0",
+  "description": "submission pwa bundesliga",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "http-server ./"
+  },
+  "keywords": [],
+  "author": "moh sukron makmun",
+  "license": "ISC",
+  "dependencies": {
+    "web-push": "^3.4.4"
+  }
+}

@@ -2,12 +2,14 @@ let CACHE_NAME = "pwa-bundesliga";
 const urlsToCache = [
   "./",
   "./manifest.json",
+  "./index.js",
   "./nav.html",
   "./index.html",
-  "./index.js",
+  "./service-worker.js",
   "./pages/beranda.html",
   "./pages/klasemen.html",
   "./pages/klub.html",
+  "./pages/klub_favorit.html",
   "./pages/lihat_tim.html",
   "./js/api-football-data.js",
   "./js/db.js",
@@ -73,4 +75,28 @@ self.addEventListener("activate", function(event) {
         );
       })
     );
+});
+
+self.addEventListener('push', event => {
+  let body;
+  if (event.data) {
+    body = event.data.text();
+  } else {
+    body = 'Push message no payload';
+  }
+
+  const title = CACHE_NAME.toUpperCase();
+  const options = {
+    body: body,
+    icon: './img/icon/favicon-32x32.png',
+    badge: './img/icon/favicon-16x16.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    }
+  };
+  event.waitUntil(
+      self.registration.showNotification(title, options)
+  );
 });
