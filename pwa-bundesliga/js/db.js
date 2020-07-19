@@ -38,11 +38,16 @@ const saveFavorite = (data) => {
     .then(db => {
         let tx = db.transaction(objectStoreName, "readwrite");
         let store = tx.objectStore(objectStoreName);
-        store.add(data);
+        store.put(data);
         return tx.complete;
     })
     .then(() => {
-        alert("Berhasil! Anda menambahkan data favorit.");
+        M.Toast.dismissAll();
+        M.toast({
+          html: `<strong>Berhasil!</strong> Anda menambahkan data favorit`,
+          displayLength: 3000,
+          classes: 'green center'
+        });
     })
 }
 
@@ -56,7 +61,12 @@ const deleteFavorite = (id) => {
           return tx.complete;
         })
         .then( player => {
-          alert("Anda membatalkan data favorit.");
+          M.Toast.dismissAll();
+          M.toast({
+            html: 'Anda membatalkan data favorit.',
+            displayLength: 3000,
+            classes: 'grey center'
+          });
           resolve(player);
         })
     });

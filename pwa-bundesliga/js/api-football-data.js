@@ -12,7 +12,7 @@ changeImageProtocol(url) {
 }
 
 status(response) {
-    if (response.errorCode == undefined) {
+    if (response.errorCode === undefined) {
         return Promise.resolve(response);
     } else {
         console.log(`Error : ${response.status}`);
@@ -82,7 +82,7 @@ renderTeamSection(result, params='caches') {
     let page = urlSearch.get("page");
 
     if(result.teams.length > 0) {
-        if (page == "" || page == undefined) page = "beranda";
+        if (page === "" || page === undefined) page = "beranda";
         
         switch (page) {
             case "beranda":
@@ -118,7 +118,8 @@ renderTeamSection(result, params='caches') {
         
         const teams = result.teams;
         $(".btn-favorite").on("click", (event) => {
-            const favIcon = event.target;
+            console.log(event);
+            const favIcon = event.currentTarget.children[0];
             const id = event.currentTarget.dataset.id;
             const data = teams.find( data => {
                 return parseInt(data.id) === parseInt(id);
@@ -126,18 +127,14 @@ renderTeamSection(result, params='caches') {
             const buttonTim = $("a[data-id='"+id+"']");
             
             if(favIcon.classList.contains("grey-text")){
-                if(confirm("Anda akan menambahkan sebagai data Favorit?")){
-                    favIcon.classList.remove('grey-text');
-                    favIcon.classList.add('red-text');
-                    saveFavorite(data);
-                }
+                favIcon.classList.remove('grey-text');
+                favIcon.classList.add('red-text');
+                saveFavorite(data);
     
             }else{
-                if(confirm("Anda akan membatalkan sebagai data Favorit?")){
-                    favIcon.classList.remove('red-text');
-                    favIcon.classList.add('grey-text');
-                    deleteFavorite(id);
-                }
+                favIcon.classList.remove('red-text');
+                favIcon.classList.add('grey-text');
+                deleteFavorite(id);
                 
             }
         });
@@ -189,10 +186,6 @@ klubTeamRender(result, params){
                         </div>
                         <div class="card-action center white" style="padding: 5px;">
                             <button type="button" class="btn white btn-favorite" data-id="${teams.id}"><i class="material-icons grey-text">favorite</i></button> `;
-        if(params === "online"){
-            setHTML +=  `<a href="index.html?page=lihat_tim&id=${teams.id}" class="btn white" data-id="${teams.id}"><i class="material-icons grey-text">group</i></a>`;
-
-        }
         setHTML +=  `</div>
                     </div>
                 </div>
@@ -438,21 +431,29 @@ renderFavorite(result) {
                     </tr>
                 </thead>
                 <tbody>`;
-    for (let i = 0; i < result.length; i++) {
-        let team = result[i];
+    if(result.length > 0) {
+        for (let i = 0; i < result.length; i++) {
+            let team = result[i];
+
+            setHTML += `<tr>
+                        <td>${i+1}</td>
+                        <td><img src="${this.changeImageProtocol(team.crestUrl)}" class="img-team-standings" alt="Logo ${team.name}"></td>
+                        <td>${team.name}</td>
+                        <td>${team.shortName}</td>
+                        <td>${team.founded}</td>
+                        <td>${team.venue}</td>
+                        <td>${team.clubColors}</td>
+                        <td>
+                            <a href="javascript:;" class="btn btn-small white btn-favorite" data-id=${result[i].id}><i class="material-icons red-text">favorite</i></a>
+                        </td>
+                    </tr>`;    
+        }
+    }else{
 
         setHTML += `<tr>
-                    <td>${i+1}</td>
-                    <td><img src="${this.changeImageProtocol(team.crestUrl)}" class="img-team-standings" alt="Logo ${team.name}"></td>
-                    <td>${team.name}</td>
-                    <td>${team.shortName}</td>
-                    <td>${team.founded}</td>
-                    <td>${team.venue}</td>
-                    <td>${team.clubColors}</td>
-                    <td>
-                        <a href="javascript:;" class="btn btn-small white btn-favorite" data-id=${result[i].id}><i class="material-icons red-text">favorite</i></a>
-                    </td>
+                    <td colspan="8" class="center">Anda tidak memiliki klub favorit</td>
                 </tr>`;    
+        
     }
     setHTML += `</tbody>
             </table>
@@ -461,7 +462,7 @@ renderFavorite(result) {
     $(".table-favorite-klub").html(setHTML);
 
     $(".btn-favorite").on("click", (event) => {
-        const favIcon = event.target;
+        const favIcon = event.currentTarget.children[0];
         const idPlayer = event.currentTarget.dataset.id;
         
         if(favIcon.classList.contains("red-text")){
