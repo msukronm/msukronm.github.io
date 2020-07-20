@@ -5,9 +5,9 @@ const vapidKeys = {
     "privateKey": "W_d-bhwDihA5sU8aUkaREsf_4aUqIxMyjNk2u9ot7Z4"
  };
 
- const setEndpoint = "https://fcm.googleapis.com/fcm/send/d7Z_KBIfN4Y:APA91bGi8j70_8e_kR46cRLUGYxnK6qUCVvfSmhTjuQo1u4vbEHTzPpKZMVLSYplmXfJE77RvlT1wC561az0TetkiXd1axEedNP3UIeGxfro2lLejhtt0D9d1iR7t03WxGtYDeisNJwA";
- const keysP256dh = "BAm/kkUkVWEqZlKIHVmuVswmOy/ztjMpA5YP85Hdzi7DoHvjeUm3+qhdoEp1ZFfLcqL0srOXUhtTT1PwHDGPJ+A=";
- const keysAuth = "W9LTiDgAIntOkkdQPzZxNQ==";
+ const setEndpoint = "https://fcm.googleapis.com/fcm/send/f5Mnrfn8Y6A:APA91bFeWRGL5JRVLF17JEMrqkB1RwZoAPrCNvHsrU4t-yBj6yH77UlHAmvDfey0oAbyJK2CYZn_u3hUh1k6IK146anooVdX-XB51FadmZrBSV_BFrvZclcdCQIqioRx3jtN7Pv0DGek";
+ const keysP256dh = "BBrCYjp/ItPT6OXg02hV6C2Dem7XN4zl82JqUO5iQ38XMvcZ2Kq1wWO9eojsjldgvJWMp7nLM75sbcF0Awnrjdo=";
+ const keysAuth = "0ubTqQ6UvCRBJZOIgdeFlA==";
 
 const payload = 'Update terus informasi Bundesliga disini!';
 const options = {

@@ -6,14 +6,16 @@ if(workbox)
 }
 
 workbox.precaching.precacheAndRoute([
-  {url: "./", revision: '2'},
-  {url: "./manifest.json", revision: '2'},
-  {url: "./index.js", revision: '2'},
-  {url: "./nav.html", revision: '2'},
-  {url: "./index.html", revision: '2'},
-  {url: "./service-worker.js", revision: '2'},
-  {url: "./pages/beranda.html", revision: '2'}
-]);
+  {url: "./", revision: '3'},
+  {url: "./manifest.json", revision: '3'},
+  {url: "./index.js", revision: '3'},
+  {url: "./nav.html", revision: '3'},
+  {url: "./index.html", revision: '3'},
+  {url: "./service-worker.js", revision: '3'},
+  {url: "./pages/beranda.html", revision: '3'}
+], {
+  ignoreURLParametersMatching: [/.*/]
+});
 
 workbox.routing.registerRoute(
   /\.(?:png|gif|jpg|jpeg|svg)$/,
@@ -45,6 +47,15 @@ workbox.routing.registerRoute(
   /^https:\/\/api\.football-data\.org/,
   workbox.strategies.staleWhileRevalidate({
     cacheName: 'api-football-data-org',
+    plugins: [
+      new workbox.cacheableResponse.Plugin({
+        statuses: [0, 200],
+      }),
+      new workbox.expiration.Plugin({
+        maxAgeSeconds: 60 * 60 * 24 * 30,
+        maxEntries: 30,
+      }),
+    ],
   })
 );
 
