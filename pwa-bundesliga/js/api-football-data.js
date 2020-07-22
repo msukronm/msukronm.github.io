@@ -147,7 +147,7 @@ berandaTeamRender(result){
     for(let i=0; i<result.teams.length; i++){
         const teams = result.teams[i];
         imgUrl = this.changeImageProtocol(teams.crestUrl);
-        setHTML += `<img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team">`;
+        setHTML += `<img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team" onerror="this.src='./img/icon/android-chrome-192x192.png'">`;
     }
 
     return setHTML;
@@ -176,7 +176,7 @@ klubTeamRender(result, params){
         setHTML += `<div class="col l6 s12">
                 <div class="card ${setColor}">
                     <div class="card-image ${setColor2}" style="text-align: -webkit-center">
-                        <img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team">
+                        <img src="${imgUrl}" alt="Logo ${teams.name}" class="img-team" onerror="this.src='./img/icon/android-chrome-192x192.png'">
                     </div>
                     <div class="card-stacked">
                         <div class="card-content ${setColorText} center">
@@ -317,7 +317,7 @@ renderTableStandingSection(result) {
                 <tr class="${bgColor}">
                     <td>${tableStandings[i].position}</td>
                     <td class="valign-wrapper">
-                        <img src="${imgUrl}" alt="Logo ${tableStandings[i].team.name}" class="img-team-standings">
+                        <img src="${imgUrl}" alt="Logo ${tableStandings[i].team.name}" class="img-team-standings" onerror="this.src='./img/icon/android-chrome-192x192.png'">
                         ${tableStandings[i].team.name}
                     </td>
                     <td>${tableStandings[i].playedGames}</td>
@@ -387,7 +387,7 @@ renderTableChampionSection(result) {
                     <tr>
                         <td>${startYear[0]} - ${endYear[0]}</td>
                         <td class="valign-wrapper">
-                            <img src="${imgUrl}" alt="Logo ${winnerData.name}" class="img-team-standings">
+                            <img src="${imgUrl}" alt="Logo ${winnerData.name}" class="img-team-standings" onerror="this.src='./img/icon/android-chrome-192x192.png'">
                             ${winnerData.name}
                         </td>
                     </tr>`;
@@ -437,7 +437,7 @@ renderFavorite(result) {
 
             setHTML += `<tr>
                         <td>${i+1}</td>
-                        <td><img src="${this.changeImageProtocol(team.crestUrl)}" class="img-team-standings" alt="Logo ${team.name}"></td>
+                        <td><img src="${this.changeImageProtocol(team.crestUrl)}" class="img-team-standings" alt="Logo ${team.name}" onerror="this.src='./img/icon/android-chrome-192x192.png'"></td>
                         <td>${team.name}</td>
                         <td>${team.shortName}</td>
                         <td>${team.founded}</td>
